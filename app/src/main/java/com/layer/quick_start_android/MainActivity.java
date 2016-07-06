@@ -24,17 +24,22 @@ package com.layer.quick_start_android;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.layer.sdk.LayerClient;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -224,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
             && resultCode == RESULT_OK) {
                 Uri videoUri = data.getData();
                 Log.v(TAG, "Video uri get " + videoUri);
+                videoRecorded(videoUri);
         }
     }
 
@@ -258,6 +264,49 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void videoRecorded(Uri uri) {
+        String path = uriToPath(uri);
+        Log.v(TAG, "the path is " + path);
+        byte[] videoByteArray = fileToByteArray(new File(path));
+    }
+
+    private String uriToPath(Uri uri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = getContentResolver().query(uri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+    private byte[] fileToByteArray(File file) {
+        byte[] videoBytes = null;
+
+        try {
+            // Convert the video into bytes
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            FileInputStream fis = null;
+                fis = new FileInputStream(file);
+
+            byte[] buf = new byte[1024];
+            int n;
+            while (-1 != (n = fis.read(buf)))
+                baos.write(buf, 0, n);
+
+            videoBytes = baos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return videoBytes;
     }
 
 }
