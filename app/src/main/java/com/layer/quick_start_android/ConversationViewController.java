@@ -1,6 +1,8 @@
 package com.layer.quick_start_android;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -53,6 +55,9 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
     private ScrollView conversationScroll;
     private LinearLayout conversationView;
     private TextView typingIndicator;
+    private Button cameraButton;
+
+    private static final int PICK_IMAGE = 1;
 
     //List of all users currently typing
     private ArrayList<String> typingUsers;
@@ -62,6 +67,8 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
 
     //All messages
     private Hashtable<String, MessageView> allMessages;
+
+    private MainActivity mMainActivity;
 
     public ConversationViewController(MainActivity ma, LayerClient client) {
 
@@ -74,6 +81,8 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         //List of users that are typing which is used with LayerTypingIndicatorListener
         typingUsers = new ArrayList<>();
 
+        mMainActivity = ma;
+
         //Change the layout
         ma.setContentView(R.layout.activity_main);
 
@@ -84,12 +93,14 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         conversationScroll = (ScrollView) ma.findViewById(R.id.scrollView);
         conversationView = (LinearLayout) ma.findViewById(R.id.conversation);
         typingIndicator = (TextView) ma.findViewById(R.id.typingIndicator);
+        cameraButton = (Button) ma.findViewById(R.id.CameraButton);
 
         //Capture user input
         sendButton.setOnClickListener(this);
         topBar.setOnClickListener(this);
         userInput.setText(getInitialMessage());
         userInput.addTextChangedListener(this);
+        cameraButton.setOnClickListener(this);
 
         //If there is an active conversation between the Device, Simulator, and Dashboard (web
         // client), cache it
@@ -141,6 +152,17 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         //Sends the message
         if (activeConversation != null)
             activeConversation.send(message);
+    }
+
+    public void sendPhotoMessage(byte[] jpeg){
+
+        Message message = layerClient.newMessage(Arrays.asList(layerClient.newMessagePart("image/jpeg", jpeg)));
+
+        if (activeConversation != null)
+        {
+            activeConversation.send(message);
+        }
+
     }
 
     //Create a random color and apply it to the Layer logo bar
@@ -289,6 +311,13 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         // conversation's metadata
         if (v == topBar) {
             topBarClicked();
+        }
+
+        if (v == cameraButton) {
+
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            mMainActivity.startActivityForResult(pickPhoto, PICK_IMAGE);
         }
     }
 
