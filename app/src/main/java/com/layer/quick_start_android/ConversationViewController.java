@@ -55,7 +55,8 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
     private ScrollView conversationScroll;
     private LinearLayout conversationView;
     private TextView typingIndicator;
-    private Button cameraButton;
+    private Button photoButton;
+    private Button videoButton;
 
     private static final int PICK_IMAGE = 1;
 
@@ -93,14 +94,16 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         conversationScroll = (ScrollView) ma.findViewById(R.id.scrollView);
         conversationView = (LinearLayout) ma.findViewById(R.id.conversation);
         typingIndicator = (TextView) ma.findViewById(R.id.typingIndicator);
-        cameraButton = (Button) ma.findViewById(R.id.CameraButton);
+        photoButton = (Button) ma.findViewById(R.id.photoButton);
+        videoButton = (Button) ma.findViewById(R.id.videoButton);
 
         //Capture user input
         sendButton.setOnClickListener(this);
         topBar.setOnClickListener(this);
         userInput.setText(getInitialMessage());
         userInput.addTextChangedListener(this);
-        cameraButton.setOnClickListener(this);
+        photoButton.setOnClickListener(this);
+        videoButton.setOnClickListener(this);
 
         //If there is an active conversation between the Device, Simulator, and Dashboard (web
         // client), cache it
@@ -305,19 +308,25 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         // send the message
         if (v == sendButton) {
             sendButtonClicked();
+            return;
         }
 
         //When the Layer logo bar is clicked, randomly change the color and store it in the
         // conversation's metadata
         if (v == topBar) {
             topBarClicked();
+            return;
         }
 
-        if (v == cameraButton) {
-
+        if (v == photoButton) {
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             mMainActivity.startActivityForResult(pickPhoto, PICK_IMAGE);
+            return;
+        }
+
+        if (v == videoButton) {
+            // Start the camera for video
         }
     }
 

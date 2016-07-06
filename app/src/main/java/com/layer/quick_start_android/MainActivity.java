@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
     public void onUserAuthenticated(){
 
         if(conversationView == null) {
-
             conversationView = new ConversationViewController(this, layerClient);
 
             if (layerClient != null) {
