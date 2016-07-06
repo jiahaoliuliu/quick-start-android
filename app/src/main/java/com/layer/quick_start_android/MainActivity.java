@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.layer.sdk.LayerClient;
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     // background).
     public static final String GCM_PROJECT_NUMBER = "00000";
 
+    private static final String TAG = "MainActivity";
 
     //Global variables used to manage the Layer Client and the conversations in this app
     private LayerClient layerClient;
@@ -211,9 +213,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!(data == null)) {
-            super.onActivityResult(requestCode, resultCode, data);
-            galleryPhoto(data.getData());
+
+        // Photo gallery
+        if (requestCode == ConversationViewController.PICK_IMAGE) {
+            if (!(data == null)) {
+                super.onActivityResult(requestCode, resultCode, data);
+                galleryPhoto(data.getData());
+            }
+        } else if (requestCode == ConversationViewController.REQUEST_VIDEO_CAPTURE
+            && resultCode == RESULT_OK) {
+                Uri videoUri = data.getData();
+                Log.v(TAG, "Video uri get " + videoUri);
         }
     }
 

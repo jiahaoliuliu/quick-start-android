@@ -2,6 +2,7 @@ package com.layer.quick_start_android;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -58,7 +59,8 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
     private Button photoButton;
     private Button videoButton;
 
-    private static final int PICK_IMAGE = 1;
+    public static final int PICK_IMAGE = 1000;
+    public static final int REQUEST_VIDEO_CAPTURE = 1001;
 
     //List of all users currently typing
     private ArrayList<String> typingUsers;
@@ -327,6 +329,10 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
 
         if (v == videoButton) {
             // Start the camera for video
+            Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            if (takeVideoIntent.resolveActivity(mMainActivity.getPackageManager()) != null) {
+                mMainActivity.startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+            }
         }
     }
 
